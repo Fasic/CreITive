@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +62,7 @@ public class Blog extends AppCompatActivity {
         Response.Listener listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+
                 if(response != null) fillBlog(response);
                 else Toast.makeText(getApplicationContext(), context.getString(R.string.error_wrong), Toast.LENGTH_SHORT).show();
             }
@@ -120,20 +122,29 @@ public class Blog extends AppCompatActivity {
     /***/
 
     private void fillBlog(JSONObject blog){
-        TextView blogView = findViewById(R.id.blogText);
+        WebView blogView = findViewById(R.id.blogView);
+
         String content = "";
         try {
             content = blog.get("content").toString();
+            Log.i("-->", content);
         }catch (JSONException error){
             Toast.makeText(getApplicationContext(), context.getString(R.string.error_wrong), Toast.LENGTH_SHORT).show();
             Log.i("error", "Error with JOSNObject content from server! Back-end problem!");
             //need better way of error handling? and user message about it?
         }
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            blogView.setText(Html.fromHtml(content,Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            blogView.setText(Html.fromHtml(content));
-        }
+
+        blogView.setInitialScale(1);
+        blogView.getSettings().setJavaScriptEnabled(true);
+        blogView.getSettings().setLoadWithOverviewMode(true);
+        blogView.getSettings().setUseWideViewPort(true);
+        blogView.getSettings().setSupportZoom(true);
+        blogView.getSettings().setBuiltInZoomControls(true);
+        blogView.getSettings().setDisplayZoomControls(false);
+        blogView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        blogView.setScrollbarFadingEnabled(false);
+
+        blogView.loadData(content, "text/html", null);
 
 
 

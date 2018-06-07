@@ -30,9 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Login extends AppCompatActivity {
-    String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-    String passwordPattern = "^.{6,}$";
-    String url = "http://blogsdemo.creitiveapps.com/login";
     Context context;
 
     SharedPreferences sharedPref;
@@ -58,6 +55,14 @@ public class Login extends AppCompatActivity {
         else queue = Volley.newRequestQueue(this);
     }
 
+    /**If user has token, and gets to login make queue. */
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        queue = Volley.newRequestQueue(this);
+    }
+
     /** On login button press
      * Validates inputs, if error, toast's to user
      * On valid inut, sends request.
@@ -71,8 +76,8 @@ public class Login extends AppCompatActivity {
         String email = emailET.getText().toString().trim();
         String password = passwordET.getText().toString().trim();
 
-        if (email.matches(emailPattern)) {
-            if (password.matches(passwordPattern))
+        if (email.matches(context.getString(R.string.email_pattern))) {
+            if (password.matches(context.getString(R.string.password_pattern)))
                 makeJsonObjReq(email, password);
             else
                 Toast.makeText(getApplicationContext(), context.getString(R.string.error_password), Toast.LENGTH_SHORT).show();
@@ -134,6 +139,8 @@ public class Login extends AppCompatActivity {
                 }
             }
         };
+
+        String url = context.getString(R.string.url_login);
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Method.POST, url, json,listener,errorListener) {
 

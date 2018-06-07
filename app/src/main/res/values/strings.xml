@@ -7,5 +7,10 @@
     <string name="error_email">Wrong email format.</string>
     <string name="error_password">Wrong password format.</string>
     <string name="error_wrong">Ooooops somthing went wrong.</string>
+
+    <string name="email_pattern">[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+</string>
+    <string name="password_pattern">^.{6,}$</string>
+    <string name="url_login">http://blogsdemo.creitiveapps.com/login</string>
+
 </resources>
 

@@ -17,10 +17,10 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
+import com.android.volley.Response.Listener;
+import com.android.volley.Response.ErrorListener;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Picasso;
@@ -142,7 +142,7 @@ public class BlogList extends AppCompatActivity {
          *
          */
 
-        Response.Listener listener = new Response.Listener<String>() {
+        Listener listener = new Listener<String>() {
             @Override
             public void onResponse(String response) {
                 JSONArray array = null;
@@ -163,7 +163,7 @@ public class BlogList extends AppCompatActivity {
          * Gives user feedback for errors.
          */
 
-        Response.ErrorListener errorListener =  new Response.ErrorListener() {
+        ErrorListener errorListener =  new ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {

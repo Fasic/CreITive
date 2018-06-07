@@ -5,24 +5,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.webkit.WebView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
+import com.android.volley.Response.Listener;
+import com.android.volley.Response.ErrorListener;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +30,12 @@ public class Blog extends AppCompatActivity {
     Context context;
     RequestQueue queue;
     String token;
+
+    /** If no id goBack
+     *  Else send requst for blog with ID
+     *
+     * @param savedInstanceState
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +59,13 @@ public class Blog extends AppCompatActivity {
         final String tokenF = token;
 
         /**Listener for volley onRespones.
+         * Fill blog or tell user somthing is wrong.
          *
          */
 
-        Response.Listener listener = new Response.Listener<JSONObject>() {
+        Listener listener = new Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-
                 if(response != null) fillBlog(response);
                 else Toast.makeText(getApplicationContext(), context.getString(R.string.error_wrong), Toast.LENGTH_SHORT).show();
             }
@@ -72,7 +75,7 @@ public class Blog extends AppCompatActivity {
          * Gives user feedback for errors.
          */
 
-        Response.ErrorListener errorListener =  new Response.ErrorListener() {
+        ErrorListener errorListener =  new ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
@@ -85,7 +88,7 @@ public class Blog extends AppCompatActivity {
         };
 
         String url = context.getString(R.string.url_blogs);
-        url +=  "/" + id;
+        url +=  "/" + id; //add id to url
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest (Request.Method.GET, url, null, listener, errorListener) {
 
@@ -127,26 +130,13 @@ public class Blog extends AppCompatActivity {
         String content = "";
         try {
             content = blog.get("content").toString();
-            Log.i("-->", content);
         }catch (JSONException error){
             Toast.makeText(getApplicationContext(), context.getString(R.string.error_wrong), Toast.LENGTH_SHORT).show();
             Log.i("error", "Error with JOSNObject content from server! Back-end problem!");
             //need better way of error handling? and user message about it?
         }
 
-        blogView.setInitialScale(1);
         blogView.getSettings().setJavaScriptEnabled(true);
-        blogView.getSettings().setLoadWithOverviewMode(true);
-        blogView.getSettings().setUseWideViewPort(true);
-        blogView.getSettings().setSupportZoom(true);
-        blogView.getSettings().setBuiltInZoomControls(true);
-        blogView.getSettings().setDisplayZoomControls(false);
-        blogView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        blogView.setScrollbarFadingEnabled(false);
-
         blogView.loadData(content, "text/html", null);
-
-
-
     }
 }

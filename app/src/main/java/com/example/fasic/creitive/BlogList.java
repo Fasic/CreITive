@@ -36,13 +36,19 @@ public class BlogList extends AppCompatActivity {
     Context context;
     RequestQueue queue;
     String token;
+
+    /** if no token, go back
+     * else make requast, for blog list
+     *
+     * @param savedInstanceState
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = this;
-
         setContentView(R.layout.activity_blog_list);
-        getSupportActionBar().setTitle(R.string.blog_list_label); //set title of activity
+        getSupportActionBar().setTitle(R.string.blog_list_label);
+        context = this;
 
         Intent intent = this.getIntent();
         token = intent.getStringExtra("token");
@@ -50,14 +56,18 @@ public class BlogList extends AppCompatActivity {
         if(token == "") goBack();
         else{
             queue = Volley.newRequestQueue(this);
-            Log.i("-->", token);
             makeJsonObjReq(token);
         }
     }
 
-    private void fillTable(JSONArray array) {
+    /**
+     * Fill LinearLayout with blogs, from JSON array
+     *
+     * @param array
+     */
 
-        LinearLayout ll = this.findViewById(R.id.holder);
+    private void fillTable(JSONArray array) {
+        LinearLayout linearLayout = this.findViewById(R.id.holder);
         for(int i = 0 ; i < array.length(); i ++) {
             try {
                 JSONObject obj = array.getJSONObject(i);
@@ -65,30 +75,48 @@ public class BlogList extends AppCompatActivity {
                 String description = obj.getString("description");
                 String imgUrl = obj.getString("image_url");
                 int id = obj.getInt("id");
-                setRow(ll, title, description, imgUrl, id);
-            }catch (JSONException error){/*error za korisnika*/}
+                setRow(linearLayout, title, description, imgUrl, id);
+            }catch (JSONException error){
+                Toast.makeText(getApplicationContext(), context.getString(R.string.error_wrong), Toast.LENGTH_SHORT).show();
+                Log.i("error", "Error with JOSNArray respones from server! Back-end problem!");
+                //need better way of error handling? and user messige about it?
+            }
         }
 
     }
 
-    private void setRow(LinearLayout ll, String title, String description, String imgUrl, int id){
-        View mTableRow = View.inflate(this, R.layout.blog_item, null);
+    /**
+     *Sets one row of blogs,
+     * * sets values for text filds
+     * * img for img
+     * * and sets on click listener.
+     *
+     * @param linearLayout
+     * @param title
+     * @param description
+     * @param imgUrl
+     * @param id
+     */
 
-        TextView cb = mTableRow.findViewById(R.id.title);
-        cb.setText(title);
+    private void setRow(LinearLayout linearLayout, String title, String description, String imgUrl, int id){
+        View row = View.inflate(this, R.layout.blog_item, null);
 
-        TextView cb2 = mTableRow.findViewById(R.id.description);
+        TextView textViewTitle = row.findViewById(R.id.title);
+        textViewTitle.setText(title);
+
+        TextView textViewDesc = row.findViewById(R.id.description);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            cb2.setText(Html.fromHtml(description,Html.FROM_HTML_MODE_LEGACY));
+            textViewDesc.setText(Html.fromHtml(description,Html.FROM_HTML_MODE_LEGACY));
         } else {
-            cb2.setText(Html.fromHtml(description));
+            textViewDesc.setText(Html.fromHtml(description));
         }
 
-        ImageView imageView = mTableRow.findViewById(R.id.imageView);
+        ImageView imageView = row.findViewById(R.id.imageView);
         Picasso.get().load(imgUrl).into(imageView);
 
+        /** on click, call next activity with id, id of blog */
 
-        mTableRow.setOnClickListener(new View.OnClickListener()
+        row.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -97,13 +125,9 @@ public class BlogList extends AppCompatActivity {
             }
         });
 
-        mTableRow.setId(id);
-
-        ll.addView(mTableRow);
+        row.setId(id);
+        linearLayout.addView(row);
     }
-
-
-
 
     /**Makes new volley request, with token in header, and adds it to queue.
      *
@@ -113,6 +137,7 @@ public class BlogList extends AppCompatActivity {
 
     private void makeJsonObjReq(String token) {
         final String tokenF = token;
+
         /**Listener for volley onRespones.
          *
          */
@@ -120,7 +145,6 @@ public class BlogList extends AppCompatActivity {
         Response.Listener listener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("-->", response.toString());
                 JSONArray array = null;
                 try {
                     array = new JSONArray(response);
@@ -145,8 +169,8 @@ public class BlogList extends AppCompatActivity {
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                     Toast.makeText(context, context.getString(R.string.error_network_timeout), Toast.LENGTH_LONG).show();
                 } else if (error instanceof AuthFailureError) {
-                    goBack();
-                }//drugi errori
+                    goBack(); //goBack if token error
+                }//drugi errori?
                 Log.i("error", " " + error.getMessage());
             }
         };
@@ -168,15 +192,18 @@ public class BlogList extends AppCompatActivity {
             }
 
         };
-        Log.i("-->", "kao");
         queue.add(jsonObjReq);
     }
 
+    /** Method starts next activity, and intent id of blog */
+
     private void startNextActivity(int id){
-        Log.i("-->", id+"");
         Intent i = new Intent(getBaseContext(), Blog.class);
+        i.putExtra("id", id);
         startActivity(i);
     }
+
+    /** Method for going back to Login, empty SharedPref, and go back */
 
     private void goBack(){
         SharedPreferences sharedPref;

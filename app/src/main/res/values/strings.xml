@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">CreITive</string>
     <string name="login_label">Login</string>
+    <string name="blog_list_label">Blog List</string>
+    <string name="blog_label">Blog</string>
 
     <string name="error_network_timeout">No network connection. Please connect to internet.</string>
     <string name="error_auth">Wrong email/password combination.</string>
@@ -11,6 +13,8 @@
     <string name="email_pattern">[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+</string>
     <string name="password_pattern">^.{6,}$</string>
     <string name="url_login">http://blogsdemo.creitiveapps.com/login</string>
+    <string name="url_blogs">http://blogsdemo.creitiveapps.com/blogs</string>
+
 
 </resources>
 

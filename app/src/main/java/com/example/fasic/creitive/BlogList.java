@@ -200,6 +200,7 @@ public class BlogList extends AppCompatActivity {
     private void startNextActivity(int id){
         Intent i = new Intent(getBaseContext(), Blog.class);
         i.putExtra("id", id);
+        i.putExtra("token", token);
         startActivity(i);
     }
 

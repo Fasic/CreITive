@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">CreITive</string>
+    <string name="login_label">Login</string>
+
+    <string name="error_network_timeout">No network connection. Please connect to internet.</string>
+    <string name="error_auth">Wrong email/password combination.</string>
+    <string name="error_email">Wrong email format.</string>
+    <string name="error_password">Wrong password format.</string>
+    <string name="error_wrong">Ooooops somthing went wrong.</string>
 </resources>
+
